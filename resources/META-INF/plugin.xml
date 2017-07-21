@@ -1,0 +1,50 @@
+<idea-plugin version="2">
+    <id>cn.ieclipse.aorm.as</id>
+    <name>Android ORM</name>
+    <version>1.0.0</version>
+    <vendor email="li.jamling@gmail.com" url="https://github.com/Jamling/Android-ORM-ASPlugin">Jamling</vendor>
+
+    <description><![CDATA[
+      The Android ORM (AORM) plugin, help Android developers to add ORM capability with AORM quickly.<br>
+      <em>Main function</em> <br>
+      <ul>
+      <li>Add AORM annotation</li>
+      <li>Add ContentProvider template</li>
+      </ul>
+    ]]></description>
+
+    <change-notes><![CDATA[
+      2017/07/24 v1.0.0 initial version
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="141.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+
+        <group id="AORMGroup" text="Android ORM" class="cn.ieclipse.aorm.as.AormActionGroup" popup="true" compact="true">
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+        </group>
+
+        <action id="AORMAddAnnotation" class="cn.ieclipse.aorm.as.AddAnnotationAction"
+                text="Add ORM annotation"
+                description="Add AORM annotation for your Java bean">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+            <add-to-group group-id="AORMGroup" anchor="first"/>
+            <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
+        </action>
+    </actions>
+
+</idea-plugin>
