@@ -1,6 +1,5 @@
 package cn.ieclipse.aorm.as;
 
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
@@ -19,6 +18,7 @@ public class ClassEntity {
     private PsiAnnotation tablePsiAnnotation;
     private PsiElement next;
 
+    private Boolean selected = true;
     private List<FieldEntity> fieldList = new ArrayList<FieldEntity>();
 
     public ClassEntity(PsiClass psiClass) {
@@ -79,6 +79,14 @@ public class ClassEntity {
 
     public PsiClass getPsiClass() {
         return psiClass;
+    }
+
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
     }
 
     public void addAnnotation(Project project) {

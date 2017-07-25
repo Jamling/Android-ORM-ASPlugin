@@ -112,7 +112,9 @@ public class FieldsTableModel extends AbstractTableModel {
         columnModel.getColumn(COL_PROPERTY).setCellRenderer(new FieldsPropertyCellRenderer());
         columnModel.getColumn(COL_PROPERTY).setCellEditor(new FieldsPropertyCellEditor());
         columnModel.getColumn(COL_TYPE).setCellEditor(new FieldsTypeCellEditor());
-        columnModel.getColumn(COL_PROPERTY).setPreferredWidth(100);
+        columnModel.getColumn(COL_PROPERTY).setPreferredWidth(150);
+        columnModel.getColumn(COL_FIELD).setPreferredWidth(150);
+        columnModel.getColumn(COL_NOTNULL).setPreferredWidth(75);
         columnModel.getColumn(COL_NOTNULL).setPreferredWidth(50);
         columnModel.getColumn(COL_ID).setPreferredWidth(50);
 

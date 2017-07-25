@@ -1,0 +1,15 @@
+@Override
+public boolean onCreate() {
+	mOpenHelper = new SQLiteOpenHelper(this.getContext(), "${DB}",
+                null, 1) {
+            public void onCreate(SQLiteDatabase db) {
+		${TABLES}
+            }
+            
+            public void onUpgrade(SQLiteDatabase db, int oldVersion,
+                    int newVersion) {
+            }
+        };
+	session = new Session(mOpenHelper, getContext().getContentResolver());
+        return true;
+}

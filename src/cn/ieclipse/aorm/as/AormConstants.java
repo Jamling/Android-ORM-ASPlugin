@@ -10,6 +10,10 @@ import java.util.Map;
  */
 public abstract class AormConstants {
 
+    public static String providerSuperQName = "android.content.ContentProvider";
+    public static String sessionQName = "cn.ieclipse.aorm.Session";
+    public static String aormQName = "cn.ieclipse.aorm.Aorm";
+
     public static String annotationPackage = "cn.ieclipse.aorm.annotation";
     public static String tableQName = "cn.ieclipse.aorm.annotation.Table";
     public static String tableName = "Table";
@@ -18,7 +22,6 @@ public abstract class AormConstants {
     public static String columnName = "Column";
 
     public static Map<String, String> typeMap = new HashMap<String, String>();
-
     public static List<String> dbTypes = Arrays.asList("", "INTEGER", "TEXT", "STRING", "BLOB");
 
     public static Map<String, String> getTypeMap() {

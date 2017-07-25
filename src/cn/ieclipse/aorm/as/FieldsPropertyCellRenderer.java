@@ -15,6 +15,7 @@ public class FieldsPropertyCellRenderer extends BooleanTableCellRenderer {
         FieldsTableModel model = (FieldsTableModel) table.getModel();
         String name = model.getRowObject(row).getFieldName();
         checkBox.setText(name);
+        checkBox.setHorizontalAlignment(JCheckBox.LEADING);
         return checkBox;
     }
 }

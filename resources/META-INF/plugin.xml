@@ -29,12 +29,14 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <internalFileTemplate name="AORMCreate"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
 
-        <group id="AORMGroup" text="Android ORM" class="cn.ieclipse.aorm.as.AormActionGroup" popup="true" compact="true">
+        <group id="AORMGroup" text="Android ORM" class="cn.ieclipse.aorm.as.AormActionGroup" popup="true"
+               compact="true">
             <add-to-group group-id="ProjectViewPopupMenu"/>
         </group>
 
@@ -44,6 +46,11 @@
             <add-to-group group-id="GenerateGroup" anchor="last"/>
             <add-to-group group-id="AORMGroup" anchor="first"/>
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
+        </action>
+        <action id="AORMNewProvider" class="cn.ieclipse.aorm.as.NewProviderAction" text="New Provider"
+                description="New ContentProvider">
+            <add-to-group group-id="NewGroup"/>
+            <add-to-group group-id="AORMGroup" anchor="last"/>
         </action>
     </actions>
 
