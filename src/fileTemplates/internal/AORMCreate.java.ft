@@ -3,13 +3,16 @@ public boolean onCreate() {
 	mOpenHelper = new SQLiteOpenHelper(this.getContext(), "${DB}",
                 null, 1) {
             public void onCreate(SQLiteDatabase db) {
-		${TABLES}
+                ${CREATE_TABLES}
             }
             
             public void onUpgrade(SQLiteDatabase db, int oldVersion,
                     int newVersion) {
+                db.beginTransaction();
+                ${UPDATE_TABLES}
+                db.endTransaction();
             }
         };
-	session = new Session(mOpenHelper, getContext().getContentResolver());
+	    session = new Session(mOpenHelper, getContext().getContentResolver());
         return true;
 }

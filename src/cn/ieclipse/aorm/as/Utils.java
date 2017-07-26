@@ -260,15 +260,21 @@ public abstract class Utils {
                 DB = DB + ".db";
             }
             map.put("DB", DB);
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb1 = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
             for (ClassEntity entity : entities) {
-                sb.append(String.format("Aorm.createTable(db, %s.class);", entity.getClassName()));
-                sb.append("\n");
+                sb1.append(String.format("Aorm.createTable(db, %s.class);", entity.getClassName()));
+                sb1.append("\n");
+
+                sb2.append(String.format("Aorm.updateTable(db, %s.class);", entity.getClassName()));
+                sb2.append("\n");
             }
-            if (sb.length() > 0) {
-                sb.deleteCharAt(sb.length() - 1);
+            if (sb1.length() > 0) {
+                sb1.deleteCharAt(sb1.length() - 1);
+                sb2.deleteCharAt(sb2.length() - 1);
             }
-            map.put("TABLES", sb.toString());
+            map.put("CREATE_TABLES", sb1.toString());
+            map.put("UPDATE_TABLES", sb2.toString());
             String text = null;
             try {
                 text = template.getText(map);

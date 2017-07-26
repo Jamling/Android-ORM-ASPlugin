@@ -200,7 +200,7 @@ public class NewProviderDialog extends JDialog {
 //                p.setAttribute("android:authorities", tfAuth.getText());
 //                JTextField tf = new JTextField(p.toString());
 
-                Messages.showInfoMessage("Don't forget to add provider to your AndroidManifest.xml", "Tip");
+                Messages.showInfoMessage("The ContentProvider create successfully!\nDon't forget to add provider to your AndroidManifest.xml", "Success");
             }
         });
         dispose();
