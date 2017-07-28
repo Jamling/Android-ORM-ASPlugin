@@ -10,9 +10,9 @@ import java.util.List;
 /**
  * Created by Jamling on 2017/7/18.
  */
-public class FieldsTableModel extends AbstractTableModel {
+public class FieldsTableModel extends AbstractTableModel implements ICheckableTableModel {
     private ClassEntity classEntity;
-    private List<String> columnNames = Arrays.asList("Property", "Filed", "Type", "Not Null", "ID");
+    private List<String> columnNames = Arrays.asList("Property", "Filed", "Type", "Not Null", "ID", "Default");
     //private List<Class<?>> columnClasses = Arrays.asList(String.class, String.class, String.class, Boolean.class, Boolean.class);
     private JTable table;
     public static final int COL_PROPERTY = 0;
@@ -20,6 +20,7 @@ public class FieldsTableModel extends AbstractTableModel {
     public static final int COL_TYPE = 2;
     public static final int COL_NOTNULL = 3;
     public static final int COL_ID = 4;
+    public static final int COL_DEFAULT = 5;
 
     public FieldsTableModel(ClassEntity entity) {
         this.classEntity = entity;
@@ -64,6 +65,8 @@ public class FieldsTableModel extends AbstractTableModel {
             return fieldEntity.isNotNull();
         } else if (columnIndex == COL_ID) {
             return fieldEntity.isId();
+        } else if (columnIndex == COL_DEFAULT) {
+            return fieldEntity.getDefaultValue();
         }
         return null;
     }
@@ -88,6 +91,8 @@ public class FieldsTableModel extends AbstractTableModel {
             fieldEntity.setNotNull((Boolean) aValue);
         } else if (columnIndex == COL_ID) {
             fieldEntity.setId((Boolean) aValue);
+        } else if (columnIndex == COL_DEFAULT) {
+            fieldEntity.setDefaultValue((String) aValue);
         }
     }
 
@@ -115,15 +120,16 @@ public class FieldsTableModel extends AbstractTableModel {
         columnModel.getColumn(COL_PROPERTY).setPreferredWidth(150);
         columnModel.getColumn(COL_FIELD).setPreferredWidth(150);
         columnModel.getColumn(COL_NOTNULL).setPreferredWidth(75);
-        columnModel.getColumn(COL_NOTNULL).setPreferredWidth(50);
         columnModel.getColumn(COL_ID).setPreferredWidth(50);
+        columnModel.getColumn(COL_DEFAULT).setPreferredWidth(75);
 
-        JTableHeader header = table.getTableHeader();
-        header.setDefaultRenderer(new FieldsTableHeaderRenderer(table));
     }
 
     public void setTable(JTable table) {
+        boolean checked = classEntity.getFieldList().size() == classEntity.getSelectedEntities().size();
         this.table = table;
+        JTableHeader header = table.getTableHeader();
+        header.setDefaultRenderer(new FieldsTableHeaderRenderer(table, checked));
     }
 
     public int getSelectCount() {
@@ -148,6 +154,11 @@ public class FieldsTableModel extends AbstractTableModel {
             entity.setSelected(false);
         }
         table.updateUI();
+    }
+
+    @Override
+    public void selectInverse() {
+
     }
 
     private boolean autoType = false;

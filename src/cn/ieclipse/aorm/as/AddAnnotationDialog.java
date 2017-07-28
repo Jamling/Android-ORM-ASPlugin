@@ -125,6 +125,7 @@ public class AddAnnotationDialog extends JDialog {
             FieldsTableModel model = new FieldsTableModel(classEntity);
             table = new JBTable(model);
             model.setTableEditor(table);
+            model.setTable(table);
             scrollPane.setViewportView(table);
 
             table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

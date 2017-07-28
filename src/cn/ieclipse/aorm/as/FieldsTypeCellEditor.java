@@ -12,7 +12,7 @@ import java.awt.*;
 public class FieldsTypeCellEditor extends ComboBoxTableCellEditor {
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        final JComboBox comboBox = (JComboBox)this.getComponent();
+        final JComboBox comboBox = (JComboBox) this.getComponent();
         comboBox.setEditable(true);
         comboBox.setModel(new ListComboBoxModel(AormConstants.dbTypes));
         // String old = (String) value;

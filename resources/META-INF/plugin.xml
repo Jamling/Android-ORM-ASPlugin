@@ -1,6 +1,6 @@
 <idea-plugin version="2">
     <id>cn.ieclipse.aorm.as</id>
-    <name>Android ORM</name>
+    <name>Android ORM Tool</name>
     <version>1.0.0</version>
     <vendor email="li.jamling@gmail.com" url="https://github.com/Jamling/Android-ORM-ASPlugin">Jamling</vendor>
 
@@ -14,7 +14,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-      2017/07/24 v1.0.0 initial version
+      2017/07/28 v1.0.0 initial version
     ]]>
     </change-notes>
 
@@ -23,9 +23,9 @@
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
-    <!-- uncomment to enable plugin in all products
+    <!-- uncomment to enable plugin in all products -->
     <depends>com.intellij.modules.lang</depends>
-    -->
+
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->

@@ -40,12 +40,14 @@ public class FieldEntity {
                         dbType = Utils.getDeclaredStringAttributeValue(temp, "type", dbType);
                         notNull = Utils.getDeclaredBooleanAttributeValue(temp, "notNull");
                         id = Utils.getDeclaredBooleanAttributeValue(temp, "id");
+                        defaultValue = Utils.getDeclaredStringAttributeValue(temp, "defaultValue", defaultValue);
                         next = temp.getNextSibling();
                         break;
                     }
                 }
             }
         }
+        selected = psiAnnotation != null;
     }
 
     public String getDbName() {
@@ -80,6 +82,14 @@ public class FieldEntity {
         this.notNull = notNull;
     }
 
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
     public void setSelected(Boolean selected) {
         this.selected = selected;
     }
@@ -111,8 +121,12 @@ public class FieldEntity {
         if (psiAnnotation != null) {
             psiAnnotation.delete();
         }
+        if (!getSelected()) {
+            return;
+        }
         PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
         psiAnnotation = factory.createAnnotationFromText(getAnnotationText(), psiField);
+        next = null; // TODO insert into old position
         if (next != null) {
             psiField.getModifierList().addBefore(psiAnnotation, next);
         } else {
@@ -143,6 +157,11 @@ public class FieldEntity {
             sb.append(", id=");
             sb.append(isId());
             sb.append("");
+        }
+        if (getDefaultValue() != null && !getDefaultValue().isEmpty()) {
+            sb.append(", defaultValue=\"");
+            sb.append(getDefaultValue());
+            sb.append("\"");
         }
         String a = String.format("@%s(%s)", AormConstants.columnName, sb.toString());
         return a;

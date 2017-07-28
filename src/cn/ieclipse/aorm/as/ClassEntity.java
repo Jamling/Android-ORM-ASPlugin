@@ -3,7 +3,7 @@ package cn.ieclipse.aorm.as;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.search.GlobalSearchScope;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,38 +89,44 @@ public class ClassEntity {
         this.selected = selected;
     }
 
-    public void addAnnotation(Project project) {
+    private void editTableAnnotation(Project project, PsiAnnotation psiAnnotation, boolean delete) {
+        if (delete) {
+            if (psiAnnotation != null) {
+                psiAnnotation.delete();
+            }
+            return;
+        }
         PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-        if (tablePsiAnnotation == null) {
+        if (psiAnnotation == null) {
             String a = String.format("@%s(name=\"%s\")", AormConstants.tableName, table);
-            tablePsiAnnotation = factory.createAnnotationFromText(a, psiClass);
+            psiAnnotation = factory.createAnnotationFromText(a, psiClass);
+            next = null; // TODO insert into old position
             if (next != null) {
-                psiClass.getModifierList().addBefore(tablePsiAnnotation, next);
+                psiClass.getModifierList().addBefore(psiAnnotation, next);
             } else {
-                psiClass.getModifierList().addBefore(tablePsiAnnotation, psiClass.getModifierList().getFirstChild());
+                psiClass.getModifierList().addBefore(psiAnnotation, psiClass.getModifierList().getFirstChild());
             }
         } else {
-            PsiAnnotationMemberValue v = factory.createExpressionFromText(String.format("\"%s\"", table), tablePsiAnnotation);
-            tablePsiAnnotation.setDeclaredAttributeValue("name", v);
+            PsiAnnotationMemberValue v = factory.createExpressionFromText(String.format("\"%s\"", table), psiAnnotation);
+            psiAnnotation.setDeclaredAttributeValue("name", v);
         }
+    }
 
+    public void addAnnotation(Project project) {
         for (FieldEntity entity : getFieldList()) {
             entity.addAnnotation(project);
         }
+
+        editTableAnnotation(project, tablePsiAnnotation, getSelectedEntities().size() == 0);
+
         PsiJavaFile javaFile = (PsiJavaFile) psiClass.getContainingFile();
         Utils.saveDocument(javaFile);
-        PsiClass clazz = JavaPsiFacade.getInstance(project).findClass(AormConstants.tableQName, GlobalSearchScope.allScope(project));
-        if (clazz != null) {
-            PsiImportStatement importStatement = factory.createImportStatement(clazz);
-            javaFile.getImportList().add(importStatement);
-            clazz = JavaPsiFacade.getInstance(project).findClass(AormConstants.columnQName, GlobalSearchScope.allScope(project));
-            importStatement = factory.createImportStatement(clazz);
-            javaFile.getImportList().add(importStatement);
-        } else {
 
-        }
-        // Utils.saveDocument(javaFile);
+        Utils.addImport(project, javaFile, null, AormConstants.tableQName, AormConstants.columnQName);
+        Utils.optimizeImport(project, psiClass);
+
         CodeStyleManager.getInstance(project).reformat(psiClass);
+        Utils.saveDocument(psiClass.getContainingFile());
     }
 
     public void setAutoType(boolean auto) {
@@ -133,5 +139,15 @@ public class ClassEntity {
         for (FieldEntity entity : getFieldList()) {
             entity.setPrefix(prefix);
         }
+    }
+
+    public List<FieldEntity> getSelectedEntities() {
+        List<FieldEntity> list = new ArrayList<FieldEntity>();
+        for (FieldEntity entity : getFieldList()) {
+            if (entity.getSelected()) {
+                list.add(entity);
+            }
+        }
+        return list;
     }
 }

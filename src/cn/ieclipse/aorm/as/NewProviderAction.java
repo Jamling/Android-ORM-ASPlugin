@@ -1,5 +1,6 @@
 package cn.ieclipse.aorm.as;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.DumbAwareAction;
@@ -34,5 +35,11 @@ public class NewProviderAction extends DumbAwareAction {
             dialog.setVisible(true);
             dialog.dispose();
         }
+    }
+
+    @Override
+    public void update(AnActionEvent e) {
+        super.update(e);
+        getTemplatePresentation().setIcon(AllIcons.Nodes.Class);
     }
 }

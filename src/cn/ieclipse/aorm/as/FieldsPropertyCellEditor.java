@@ -1,7 +1,6 @@
 package cn.ieclipse.aorm.as;
 
 import com.intellij.ui.BooleanTableCellEditor;
-import com.intellij.ui.BooleanTableCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;

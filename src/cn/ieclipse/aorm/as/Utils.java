@@ -1,33 +1,13 @@
 package cn.ieclipse.aorm.as;
 
 import com.intellij.codeInsight.AnnotationUtil;
-import com.intellij.codeInsight.MethodImplementor;
-import com.intellij.codeInsight.completion.JavaGenerateMemberCompletionContributor;
-import com.intellij.codeInsight.daemon.impl.analysis.JavaGenericsUtil;
-import com.intellij.codeInsight.daemon.impl.analysis.JavadocErrorFilter;
-import com.intellij.codeInsight.daemon.impl.quickfix.AddMethodFix;
-import com.intellij.codeInsight.daemon.impl.quickfix.ImplementAbstractClassMethodsFix;
-import com.intellij.codeInsight.daemon.impl.quickfix.InsertSuperFix;
-import com.intellij.codeInsight.generation.*;
-import com.intellij.codeInsight.generation.actions.GenerateSuperMethodCallAction;
-import com.intellij.codeInsight.generation.actions.GenerateSuperMethodCallHandler;
-import com.intellij.codeInsight.generation.actions.ImplementMethodsAction;
-import com.intellij.codeInsight.generation.actions.OverrideMethodsAction;
-import com.intellij.codeInsight.intention.QuickFixFactory;
-import com.intellij.codeInsight.template.TemplateManager;
-import com.intellij.codeInspection.java18StreamApi.AddMethodsDialog;
-import com.intellij.codeStyle.CodeStyleFacade;
-import com.intellij.debugger.engine.evaluation.expression.SuperEvaluator;
-import com.intellij.designer.componentTree.QuickFixManager;
-import com.intellij.designer.inspection.AbstractQuickFixManager;
+import com.intellij.codeInsight.generation.OverrideImplementUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
-import com.intellij.ide.fileTemplates.FileTemplateUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -35,39 +15,19 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleFileIndex;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.*;
-import com.intellij.openapi.wm.impl.status.InsertOverwritePanel;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.psi.impl.JavaPsiFacadeEx;
-import com.intellij.psi.impl.PsiClassImplUtil;
-import com.intellij.psi.impl.PsiSuperMethodImplUtil;
 import com.intellij.psi.impl.file.PsiDirectoryFactory;
 import com.intellij.psi.impl.file.PsiJavaDirectoryFactory;
 import com.intellij.psi.impl.file.PsiJavaDirectoryImpl;
-import com.intellij.psi.impl.search.JavaOverridingMethodsSearcher;
-import com.intellij.psi.impl.source.HierarchicalMethodSignatureImpl;
-import com.intellij.psi.impl.source.codeStyle.ImportHelper;
 import com.intellij.psi.infos.CandidateInfo;
-import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.searches.OverridingMethodsSearch;
-import com.intellij.psi.search.searches.SuperMethodsSearch;
-import com.intellij.psi.util.JavaClassSupers;
-import com.intellij.psi.util.PsiMethodUtil;
-import com.intellij.psi.util.PsiSuperMethodUtil;
-import com.intellij.testIntegration.GenerateSetUpMethodAction;
-import com.intellij.ui.components.JBOptionButton;
-import com.siyeh.ig.psiutils.MethodUtils;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
-import com.sun.xml.internal.ws.model.JavaMethodImpl;
-import com.sun.xml.internal.ws.util.StringUtils;
-import org.eclipse.jdt.internal.compiler.ast.SuperReference;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -248,6 +208,8 @@ public abstract class Utils {
             // create getSession
             type = factory.createTypeByFQClassName(AormConstants.sessionQName);
             PsiMethod getSession = factory.createMethod("getSession", type);
+            getSession.getModifierList().setModifierProperty(PsiModifier.PUBLIC, true);
+            getSession.getModifierList().setModifierProperty(PsiModifier.STATIC, true);
             getSession.getBody().add(factory.createStatementFromText("return session;", getSession));
             generateClass.add(getSession);
 
@@ -263,6 +225,9 @@ public abstract class Utils {
             StringBuilder sb1 = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
             for (ClassEntity entity : entities) {
+                if (!entity.getSelected()) {
+                    continue;
+                }
                 sb1.append(String.format("Aorm.createTable(db, %s.class);", entity.getClassName()));
                 sb1.append("\n");
 
@@ -301,21 +266,57 @@ public abstract class Utils {
             }
 
             Utils.saveDocument(generateClass.getContainingFile());
+            Utils.addJavaImport(project, generateJava, null, "android.database.sqlite.SQLiteDatabase", AormConstants.aormQName);
 
-            PsiClass ref = JavaPsiFacade.getInstance(project).findClass("android.database.sqlite.SQLiteDatabase", GlobalSearchScope.allScope(project));
-            JavaCodeStyleManager.getInstance(project).addImport(generateJava, ref);
-            ref = JavaPsiFacade.getInstance(project).findClass(AormConstants.aormQName, GlobalSearchScope.allScope(project));
-            JavaCodeStyleManager.getInstance(project).addImport(generateJava, ref);
-
-            JavaCodeStyleManager javaCodeStyleManager = JavaCodeStyleManager.getInstance(project);
-            javaCodeStyleManager.optimizeImports(generateClass.getContainingFile());
-            javaCodeStyleManager.shortenClassReferences(generateClass);
-
+            Utils.optimizeImport(project, generateClass);
+            CodeStyleManager.getInstance(project).reformat(generateClass);
             Utils.saveDocument(generateJava);
 
-            CodeStyleManager.getInstance(project).reformat(generateClass);
         }
         return generateClass;
+    }
+
+    public static void addJavaImport(Project project, @NotNull PsiJavaFile psiJavaFile, GlobalSearchScope scope, String... classQNames) {
+        if (project == null) {
+            project = psiJavaFile.getProject();
+        }
+        if (scope == null) {
+            scope = GlobalSearchScope.allScope(project);
+        }
+        if (classQNames != null) {
+            JavaCodeStyleManager factory = JavaCodeStyleManager.getInstance(project);
+            for (String name : classQNames) {
+                PsiClass clazz = JavaPsiFacade.getInstance(project).findClass(name, scope);
+                if (clazz != null) {
+                    factory.addImport(psiJavaFile, clazz);
+                }
+            }
+        }
+    }
+
+    public static void addImport(Project project, @NotNull PsiJavaFile psiJavaFile, GlobalSearchScope scope, String... classQNames) {
+        if (project == null) {
+            project = psiJavaFile.getProject();
+        }
+        if (scope == null) {
+            scope = GlobalSearchScope.allScope(project);
+        }
+        if (classQNames != null) {
+            PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+            for (String name : classQNames) {
+                PsiClass clazz = JavaPsiFacade.getInstance(project).findClass(name, scope);
+                if (clazz != null) {
+                    PsiImportStatement importStatement = factory.createImportStatement(clazz);
+                    psiJavaFile.getImportList().add(importStatement);
+                }
+            }
+        }
+    }
+
+    public static void optimizeImport(Project project, PsiClass psiClass) {
+        JavaCodeStyleManager javaCodeStyleManager = JavaCodeStyleManager.getInstance(project);
+        javaCodeStyleManager.optimizeImports(psiClass.getContainingFile());
+        javaCodeStyleManager.shortenClassReferences(psiClass);
     }
 
     public static void fillProvider() {

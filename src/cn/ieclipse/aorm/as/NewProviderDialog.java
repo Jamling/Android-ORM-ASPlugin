@@ -1,33 +1,18 @@
 package cn.ieclipse.aorm.as;
 
-import com.intellij.designer.model.EmptyXmlTag;
 import com.intellij.ide.util.TreeJavaClassChooserDialog;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.MessageDialogBuilder;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.impl.file.PsiJavaDirectoryImpl;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.xml.XmlDocument;
-import com.intellij.psi.xml.XmlTag;
-import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.table.JBTable;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.DomManager;
-import com.intellij.util.xml.DomUtil;
-import com.intellij.util.xml.model.impl.DomModelFactoryHelper;
-import com.intellij.xml.util.XmlTagUtil;
-import org.jdesktop.swingx.combobox.ListComboBoxModel;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
